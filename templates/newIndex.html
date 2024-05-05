@@ -6,7 +6,7 @@
 	<title>Simple Chat</title>
 	<style>
 		.chat-window {
-			width: 300px;
+			width: 350px;
 			height: 500px;
 			background-color: white;
 			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -61,13 +61,8 @@
 			<!-- Messages will be displayed here -->
 		</div>
 		<div class="input-area">
-			<form id="messageForm" action="/submit_form" method="POST">
-				<input type="hidden" id="userName" name="user" value="">
-				<input type="hidden" id="userMessage" name="message" value="">
-				<input type="text" id="inputText" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
-				<button onclick="handleSendClick()">Send</button>
-			</form>
-			<button onclick="toggleSender()">ME</button>
+			<input type="text" id="inputText" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+			<button onclick="handleSendClick()">Send</button>
 		</div>
 	</div>
 
@@ -75,17 +70,27 @@
 		var messages = [];
 		var inputText = document.getElementById('inputText');
 		var messagesDiv = document.getElementById('messages');
-		var sender = "me";
 
 		function handleSendClick() {
 			var text = inputText.value.trim();
 			if (text) {
-				messages.push({ text: text, sender: sender });
-				updateMessages();
+				messages.push({ text: text, sender: "me" });
 				inputText.value = '';
-				document.getElementById('userName').value = 'testUser';
-                document.getElementById('userMessage').value = text;
-                document.getElementById('messageForm').submit();
+				updateMessages();
+				fetch('/submit_form', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					body: `user=testUser&message=${encodeURIComponent(text)}`
+				})
+				.then(response => response.json())
+				.then(data => {
+					console.log('Received response:', data);
+					messages.push({ text: data.message, sender: "gpt" });
+					updateMessages();
+				})
+				.catch(error => console.error('Error:', error));
 			}
 		}
 
@@ -93,12 +98,6 @@
 			if (event.key === 'Enter') {
 				handleSendClick();
 			}
-		}
-
-		function toggleSender() {
-			sender = sender === "me" ? "gpt" : "me";
-			var senderButton = document.getElementsByTagName('button')[1];
-			senderButton.textContent = sender.toUpperCase();
 		}
 
 		function updateMessages() {
