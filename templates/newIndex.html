@@ -62,7 +62,7 @@
 		</div>
 		<div class="input-area">
 			<input type="text" id="inputText" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
-			<button onclick="handleSendClick()">Send</button>
+			<button id="submit_button" onclick="handleSendClick()">Send</button>
 		</div>
 	</div>
 
@@ -77,6 +77,8 @@
 				messages.push({ text: text, sender: "me" });
 				inputText.value = '';
 				updateMessages();
+				document.getElementById('submit_button').disabled = true;
+				
 				fetch('/submit_form', {
 					method: 'POST',
 					headers: {
@@ -89,6 +91,7 @@
 					console.log('Received response:', data);
 					messages.push({ text: data.message, sender: "gpt" });
 					updateMessages();
+					document.getElementById('submit_button').disabled = false;
 				})
 				.catch(error => console.error('Error:', error));
 			}
