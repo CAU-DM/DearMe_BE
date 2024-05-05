@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Simple Chat</title>
+	<style>
+		.chat-window {
+			width: 300px;
+			height: 500px;
+			background-color: white;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			display: flex;
+			flex-direction: column;
+		}
+
+		.messages {
+			flex-grow: 1;
+			overflow-y: auto;
+			display: flex;
+			padding: 10px;
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.message {
+			display: inline-flex;
+			min-width: 100px;
+			max-width: 80%;
+			padding: 8px 20px;
+			margin: 5px 0;
+			border-radius: 10px;
+			word-break: break-all;
+			background-color: #f1f1f1;
+			align-items: flex-start;
+			justify-content: flex-start;
+			width: fit-content;
+		}
+
+		.message.me {
+			align-self: flex-end;
+			background-color: #007bff;
+			color: white;
+		}
+
+		.message.gpt {
+			align-self: flex-start;
+			background-color: #cccccc;
+		}
+
+		.input-area {
+			margin-top: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="chat-window">
+		<div class="messages" id="messages">
+			<!-- Messages will be displayed here -->
+		</div>
+		<div class="input-area">
+			<input type="text" id="inputText" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+			<button onclick="handleSendClick()">Send</button>
+			<button onclick="toggleSender()">ME</button>
+		</div>
+	</div>
+
+	<script>
+		var messages = [];
+		var inputText = document.getElementById('inputText');
+		var messagesDiv = document.getElementById('messages');
+		var sender = "me";
+
+		function handleSendClick() {
+			var text = inputText.value.trim();
+			if (text) {
+				messages.push({ text: text, sender: sender });
+				updateMessages();
+				inputText.value = '';
+			}
+		}
+
+		function handleKeyPress(event) {
+			if (event.key === 'Enter') {
+				handleSendClick();
+			}
+		}
+
+		function toggleSender() {
+			sender = sender === "me" ? "gpt" : "me";
+			var senderButton = document.getElementsByTagName('button')[1];
+			senderButton.textContent = sender.toUpperCase();
+		}
+
+		function updateMessages() {
+			messagesDiv.innerHTML = '';
+			messages.forEach(function (message) {
+				var div = document.createElement('div');
+				div.className = `message ${message.sender}`;
+				div.textContent = message.text;
+				messagesDiv.appendChild(div);
+			});
+		}
+	</script>
+</body>
+
+</html>
