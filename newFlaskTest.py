@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template, session
-import time
+import copy
 import os
 import dm_ai
 
@@ -9,23 +9,21 @@ app.secret_key = os.urandom(24)
 @app.route('/')
 def index():
     session.pop('chat', None)
-    session['chat'] = session.get('chat', conversation_history)
+    session['chat'] = session.get('chat', copy.deepcopy(conversation_history))
     return render_template('newIndex.html')
 
 @app.route('/submit_form', methods=['POST'])
 def submit_form():
     global client
 
-    user = request.form['user']
-    message = request.form['message']
-
+    response_message = dm_ai.generate_chat(client, request.form['message'], session['chat'])
     session.modified = True
-    response_message = dm_ai.generate_chat(client, message, session['chat'])
+    print("Chat history:", session['chat'])
+
     response_data = {
         'status': 'success',
         'message': response_message
     }
-    print("Chat history:", session['chat'])
     return jsonify(response_data)
 
 if __name__ == '__main__':
