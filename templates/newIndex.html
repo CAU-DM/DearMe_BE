@@ -50,6 +50,7 @@
 
 		.input-area {
 			margin-top: 10px;
+			display: flex;
 		}
 	</style>
 </head>
@@ -60,8 +61,12 @@
 			<!-- Messages will be displayed here -->
 		</div>
 		<div class="input-area">
-			<input type="text" id="inputText" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
-			<button onclick="handleSendClick()">Send</button>
+			<form id="messageForm" action="/submit_form" method="POST">
+				<input type="hidden" id="userName" name="user" value="">
+				<input type="hidden" id="userMessage" name="message" value="">
+				<input type="text" id="inputText" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+				<button onclick="handleSendClick()">Send</button>
+			</form>
 			<button onclick="toggleSender()">ME</button>
 		</div>
 	</div>
@@ -78,6 +83,9 @@
 				messages.push({ text: text, sender: sender });
 				updateMessages();
 				inputText.value = '';
+				document.getElementById('userName').value = 'testUser';
+                document.getElementById('userMessage').value = text;
+                document.getElementById('messageForm').submit();
 			}
 		}
 
