@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+import time
 
 app = Flask(__name__)
 
@@ -10,6 +11,8 @@ def index():
 def submit_form():
     user_info = request.form['user']
     message_info = request.form['message']
+    
+    time.sleep(3)
     
     print("Received user name:", user_info, " | Received message:", message_info)
     response_data = {
